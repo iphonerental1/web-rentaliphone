@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+model Booking {
+  id               String        @id @default(uuid())
+  bookingCode      String        @unique
+  unitId           String
+  customerName     String
+  customerPhone    String
+  customerIdentity String
+  customerAddress  String?
+  startDate        DateTime
+  endDate          DateTime
+  actualReturnDate DateTime?
+  totalDays        Int
+  totalPrice       Decimal       @db.Decimal(10, 2)
+  fineAmount       Decimal       @default(0) @db.Decimal(10, 2)
+  status           BookingStatus @default(BOOKED)
+  bankName         String?
+  paymentProofUrl  String?
+  notes            String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  unit             IphoneUnit    @relation(fields: [unitId], references: [id])
+
+  @@map("bookings")
+}
+
+model IphoneModel {
+  id           String         @id @default(uuid())
+  name         String
+  slug         String         @unique
+  series       String
+  storage      String
+  pricePerDay  Decimal        @db.Decimal(10, 2)
+  description  String?
+  imageUrl     String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  units        IphoneUnit[]
+
+  @@map("iphone_models")
+}
+
+model IphoneUnit {
+  id            String        @id @default(uuid())
+  modelId       String
+  unitCode      String        @unique
+  imei          String        @unique
+  color         String
+  batteryHealth Int
+  status        UnitStatus    @default(AVAILABLE)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  model         IphoneModel   @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  bookings      Booking[]
+
+  @@map("iphone_units")
+}
+
+enum BookingStatus {
+  PENDING_PAYMENT
+  BOOKED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum UnitStatus {
+  AVAILABLE
+  RENTED
+  MAINTENANCE
+}

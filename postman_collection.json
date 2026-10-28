@@ -1,0 +1,800 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-47a8-b9c0-123456789abc",
+    "name": "iPhone Rental API - Sistem Penyewaan iPhone",
+    "description": "Koleksi Postman RESTful API untuk Sistem Penyewaan iPhone (iPhone Rental System).\n\nFitur Utama:\n1. Autentikasi Admin & Manajemen Profil (JWT)\n2. Katalog Publik (Tanpa Token)\n3. Dashboard & Statistik KPI\n4. Manajemen Model & Katalog iPhone (CRUD)\n5. Manajemen Inventaris Fisik Unit iPhone (CRUD & Status)\n6. Transaksi Booking Atomik via WhatsApp (Prisma Transaction, Double-booking Prevention, Auto-status Update)\n7. Upload Gambar (Bukti Transfer & Foto Unit)\n8. Laporan Transaksi & Ekspor CSV\n\nCara Penggunaan:\n1. Jalankan request '1. Login Admin' pada folder '2. Autentikasi'.\n2. Script Test akan secara otomatis menyimpan token ke variable `token`.\n3. Request lainnya yang memerlukan otorisasi (Admin) akan otomatis menggunakan Bearer Token tersebut.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "slug",
+      "value": "iphone-15-pro-max-256gb",
+      "type": "string"
+    },
+    {
+      "key": "modelId",
+      "value": "2c1dbd1a-dfa1-49b1-a28f-686c6c502aab",
+      "type": "string"
+    },
+    {
+      "key": "unitId",
+      "value": "aa6179b4-4fcb-49cb-b623-3db365db43b1",
+      "type": "string"
+    },
+    {
+      "key": "bookingId",
+      "value": "6f8da2c1-9dd0-45ad-a742-10db6812f1b5",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "0. Sistem & Root",
+      "item": [
+        {
+          "name": "Root Index",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Endpoint root yang mengembalikan informasi selamat datang, versi API, dan daftar endpoint utama."
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "health"]
+            },
+            "description": "Memeriksa status kesehatan server backend."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "1. Katalog Publik (Tanpa Token)",
+      "item": [
+        {
+          "name": "Daftar Katalog iPhone",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalog?series=&storage=&search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "catalog"],
+              "query": [
+                {
+                  "key": "series",
+                  "value": "",
+                  "description": "Filter berdasarkan seri (contoh: 'iPhone 15 Series')"
+                },
+                {
+                  "key": "storage",
+                  "value": "",
+                  "description": "Filter berdasarkan kapasitas penyimpanan (contoh: '256GB')"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Pencarian kata kunci nama/seri/deskripsi"
+                }
+              ]
+            },
+            "description": "Mengambil semua daftar katalog model iPhone publik beserta jumlah unit berstatus AVAILABLE dan varian warna yang tersedia."
+          },
+          "response": []
+        },
+        {
+          "name": "Detail Model iPhone by Slug",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/catalog/{{slug}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "catalog", "{{slug}}"]
+            },
+            "description": "Mengambil detail lengkap satu model iPhone berdasarkan slug (contoh: `iphone-15-pro-max-256gb`). Menampilkan ketersediaan warna dan unit fisik."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Autentikasi Admin",
+      "item": [
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Auto-save JWT Token ke variable environment dan collection",
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data && res.data.token) {",
+                  "    pm.environment.set(\"token\", res.data.token);",
+                  "    pm.collectionVariables.set(\"token\", res.data.token);",
+                  "    console.log(\"✅ Token JWT admin berhasil disimpan!\");",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Login untuk Admin. Token JWT akan otomatis diekstrak dan disimpan ke variable `{{token}}` melalui Test script."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile Admin (Me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "me"]
+            },
+            "description": "Mendapatkan profil admin yang sedang login berdasarkan token JWT."
+          },
+          "response": []
+        },
+        {
+          "name": "Ubah Password Admin",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"admin123\",\n  \"newPassword\": \"admin123_baru\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "password"]
+            },
+            "description": "Mengubah password admin. Membutuhkan verifikasi password lama dan password baru minimal 6 karakter."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Admin - Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Stats & KPI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/dashboard/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "dashboard", "stats"]
+            },
+            "description": "Mengambil ringkasan statistik KPI:\n- Total pendapatan keseluruhan, pendapatan bulan ini, dan denda\n- Ringkasan stok unit fisik (Total, Available, Rented, Maintenance)\n- Ringkasan booking (Total, Aktif, Selesai, Dibatalkan)\n- Jadwal pengembalian hari ini / Overdue\n- Transaksi sewa terbaru (5 booking terakhir)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Admin - Model iPhone (Katalog)",
+      "item": [
+        {
+          "name": "List Semua Model iPhone",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/models?series=&search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "models"],
+              "query": [
+                {
+                  "key": "series",
+                  "value": "",
+                  "description": "Filter seri"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Cari nama atau storage"
+                }
+              ]
+            },
+            "description": "Mengambil semua daftar model iPhone beserta statistik jumlah unit (Total, Available, Rented, Maintenance)."
+          },
+          "response": []
+        },
+        {
+          "name": "Tambah Model iPhone Baru",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data && res.data.id) {",
+                  "    pm.environment.set(\"modelId\", res.data.id);",
+                  "    pm.collectionVariables.set(\"modelId\", res.data.id);",
+                  "    console.log(\"✅ Model ID tersimpan:\", res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"iPhone 16 Pro\",\n  \"series\": \"iPhone 16 Series\",\n  \"storage\": \"256GB\",\n  \"pricePerDay\": 400000,\n  \"description\": \"Apple iPhone 16 Pro dengan chip A18 Pro, bodi titanium, dan tombol Camera Control.\",\n  \"imageUrl\": \"http://localhost:5000/uploads/units/sample-iphone.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/models",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "models"]
+            },
+            "description": "Menambahkan model katalog iPhone baru. Model ID yang terbentuk akan disimpan ke variable `modelId`."
+          },
+          "response": []
+        },
+        {
+          "name": "Detail Model iPhone by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/models/{{modelId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "models", "{{modelId}}"]
+            },
+            "description": "Mengambil detail spesifik satu model iPhone beserta unit-unit fisik di dalamnya."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Model iPhone",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"iPhone 16 Pro Max\",\n  \"series\": \"iPhone 16 Series\",\n  \"storage\": \"256GB\",\n  \"pricePerDay\": 450000,\n  \"description\": \"Model iPhone 16 Pro Max layar 6.9 inci dengan baterai lebih tahan lama.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/models/{{modelId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "models", "{{modelId}}"]
+            },
+            "description": "Mengubah data model katalog iPhone."
+          },
+          "response": []
+        },
+        {
+          "name": "Hapus Model iPhone",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/models/{{modelId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "models", "{{modelId}}"]
+            },
+            "description": "Menghapus model iPhone. Penghapusan dicegah jika ada unit fisik yang berstatus RENTED."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Admin - Unit Fisik iPhone",
+      "item": [
+        {
+          "name": "List Semua Unit Fisik",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/units?modelId=&status=&search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "units"],
+              "query": [
+                {
+                  "key": "modelId",
+                  "value": "",
+                  "description": "Filter berdasarkan Model ID"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Filter status: AVAILABLE, RENTED, MAINTENANCE"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Pencarian unitCode, IMEI, warna, atau nama model"
+                }
+              ]
+            },
+            "description": "Mengambil seluruh inventaris unit fisik iPhone beserta detail model."
+          },
+          "response": []
+        },
+        {
+          "name": "Tambah Unit Fisik Baru",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data && res.data.id) {",
+                  "    pm.environment.set(\"unitId\", res.data.id);",
+                  "    pm.collectionVariables.set(\"unitId\", res.data.id);",
+                  "    console.log(\"✅ Unit ID tersimpan:\", res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"modelId\": \"{{modelId}}\",\n  \"unitCode\": \"IP16P-001\",\n  \"imei\": \"358912345678901\",\n  \"color\": \"Desert Titanium\",\n  \"batteryHealth\": 100,\n  \"status\": \"AVAILABLE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/units",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "units"]
+            },
+            "description": "Menambahkan unit fisik baru. Memeriksa keunikan unitCode dan IMEI. Menyimpan ID ke `unitId`."
+          },
+          "response": []
+        },
+        {
+          "name": "Detail Unit Fisik by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/units/{{unitId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "units", "{{unitId}}"]
+            },
+            "description": "Mengambil detail spesifik unit fisik beserta riwayat 5 booking terakhir."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Data Unit Fisik",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"color\": \"Natural Titanium\",\n  \"batteryHealth\": 98\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/units/{{unitId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "units", "{{unitId}}"]
+            },
+            "description": "Mengubah informasi fisik unit seperti warna, battery health, IMEI, atau kode unit."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Status Unit Fisik",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"MAINTENANCE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/units/{{unitId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "units", "{{unitId}}", "status"]
+            },
+            "description": "Mengubah status unit fisik secara langsung (AVAILABLE, RENTED, MAINTENANCE)."
+          },
+          "response": []
+        },
+        {
+          "name": "Hapus Unit Fisik",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/units/{{unitId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "units", "{{unitId}}"]
+            },
+            "description": "Menghapus unit fisik. Unit tidak dapat dihapus jika sedang berstatus RENTED."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Admin - Booking & Transaksi Sewa",
+      "item": [
+        {
+          "name": "List Semua Booking",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/bookings?status=&startDate=&endDate=&search=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "bookings"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Filter status: BOOKED, ONGOING, COMPLETED, CANCELLED"
+                },
+                {
+                  "key": "startDate",
+                  "value": "",
+                  "description": "Filter tanggal mulai sewa (YYYY-MM-DD)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "",
+                  "description": "Filter tanggal selesai sewa (YYYY-MM-DD)"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Cari kode booking, nama penyewa, no telp, KTP, atau kode unit"
+                }
+              ]
+            },
+            "description": "Mengambil seluruh transaksi booking beserta relasi unit dan model iPhone."
+          },
+          "response": []
+        },
+        {
+          "name": "Input Booking Baru (Order WhatsApp)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data && res.data.id) {",
+                  "    pm.environment.set(\"bookingId\", res.data.id);",
+                  "    pm.collectionVariables.set(\"bookingId\", res.data.id);",
+                  "    console.log(\"✅ Booking ID tersimpan:\", res.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"unitId\": \"{{unitId}}\",\n  \"customerName\": \"Budi Santoso\",\n  \"customerPhone\": \"081234567890\",\n  \"customerIdentity\": \"KTP - 3201234567890001\",\n  \"customerAddress\": \"Jl. Sudirman No. 45, Jakarta Selatan\",\n  \"startDate\": \"2026-10-25T09:00:00.000Z\",\n  \"endDate\": \"2026-10-28T18:00:00.000Z\",\n  \"totalDays\": 3,\n  \"bankName\": \"BCA\",\n  \"paymentProofUrl\": \"http://localhost:5000/uploads/payments/sample-payment.jpg\",\n  \"notes\": \"Disewa untuk keperluan konten pernikahan (Order via WA)\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "bookings"]
+            },
+            "description": "Admin menginput pesanan sewa yang disepakati melalui WhatsApp.\n- Mencegah double-booking (Unit harus AVAILABLE).\n- Menggunakan Prisma Transaction.\n- Otomatis mengubah status unit menjadi RENTED."
+          },
+          "response": []
+        },
+        {
+          "name": "Detail Booking by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "bookings", "{{bookingId}}"]
+            },
+            "description": "Mengambil detail lengkap transaksi booking, data penyewa, unit fisik, dan link bukti transfer pembayaran."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Status Booking (Pengembalian / Selesai)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"COMPLETED\",\n  \"actualReturnDate\": \"2026-10-28T17:30:00.000Z\",\n  \"fineAmount\": 50000,\n  \"notes\": \"Pengembalian tepat waktu, denda pembersihan charger Rp 50.000.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/bookings/{{bookingId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "bookings", "{{bookingId}}", "status"]
+            },
+            "description": "Mengubah status transaksi booking.\n- Pilihan status: `BOOKED`, `ONGOING`, `COMPLETED`, `CANCELLED`.\n- Jika diubah ke `COMPLETED` atau `CANCELLED`, unit fisik iPhone **otomatis kembali menjadi AVAILABLE** dan mencatat `actualReturnDate`."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Detail Informasi Booking",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerName\": \"Budi Santoso (Updated)\",\n  \"customerPhone\": \"081299998888\",\n  \"notes\": \"Alamat pengantaran diubah ke lobi gedung kantor\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "bookings", "{{bookingId}}"]
+            },
+            "description": "Mengubah data informasi transaksi booking seperti nama, nomor telepon, alamat, bank, denda, atau catatan."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Admin - Upload File",
+      "item": [
+        {
+          "name": "Upload Bukti Transfer Pembayaran",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "Pilih file gambar bukti transfer (misal: uploads/sample-payment.jpg). PERHATIAN: Pilih file gambar berekstensi .jpg/.png, JANGAN memilih folder agar tidak terjadi error EISDIR."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/upload?type=payments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "upload"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "payments",
+                  "description": "Menyimpan ke folder uploads/payments"
+                }
+              ]
+            },
+            "description": "Mengunggah gambar bukti transfer dari WhatsApp. Mengembalikan URL gambar statis yang dapat disimpan pada booking."
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Foto Unit iPhone",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "Pilih file foto unit iPhone (misal: uploads/sample-iphone.jpg). PERHATIAN: Pilih file gambar berekstensi .jpg/.png, JANGAN memilih folder agar tidak terjadi error EISDIR."
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/upload?type=units",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "upload"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "units",
+                  "description": "Menyimpan ke folder uploads/units"
+                }
+              ]
+            },
+            "description": "Mengunggah gambar foto unit fisik atau foto katalog model iPhone."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "8. Admin - Laporan & Keuangan",
+      "item": [
+        {
+          "name": "Laporan Rekapitulasi Pendapatan (JSON)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/reports?startDate=&endDate=&status=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "reports"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "",
+                  "description": "Awal rentang tanggal laporan (YYYY-MM-DD)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "",
+                  "description": "Akhir rentang tanggal laporan (YYYY-MM-DD)"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Filter status booking: COMPLETED, ONGOING, dll"
+                }
+              ]
+            },
+            "description": "Menghasilkan laporan keuangan:\n- Total omset sewa & total denda\n- Jumlah transaksi per status\n- Breakdown pendapatan per model iPhone\n- Daftar detail transaksi dengan grand total"
+          },
+          "response": []
+        },
+        {
+          "name": "Export Laporan Transaksi ke CSV",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/reports?format=csv&startDate=&endDate=&status=",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "reports"],
+              "query": [
+                {
+                  "key": "format",
+                  "value": "csv",
+                  "description": "Format output file CSV"
+                },
+                {
+                  "key": "startDate",
+                  "value": "",
+                  "description": "Awal rentang tanggal"
+                },
+                {
+                  "key": "endDate",
+                  "value": "",
+                  "description": "Akhir rentang tanggal"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Filter status"
+                }
+              ]
+            },
+            "description": "Mengunduh file laporan rekapitulasi transaksi dalam format CSV (file `laporan-transaksi.csv`)."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
