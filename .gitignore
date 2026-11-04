@@ -1,9 +1,27 @@
+<<<<<<< HEAD
+=======
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Production build
+dist/
+dist-ssr/
+
+# Environment & Local files
+.env.local
+.env.*.local
+*.local
+
+>>>>>>> 5747f39 (Upload aplikasi iRent)
 # Logs
 logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+<<<<<<< HEAD
 lerna-debug.log*
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
@@ -147,3 +165,19 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+=======
+pnpm-debug.log*
+
+# Editor & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Script helpers & temporary
+powershell.bat
+powershell.cmd
+hapus_frontend.bat
+upload_github.bat
+.gemini/
+>>>>>>> 5747f39 (Upload aplikasi iRent)
