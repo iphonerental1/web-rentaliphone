@@ -174,25 +174,31 @@ const createUnit = async (req, res, next) => {
     let finalUnitCode = unitCode && unitCode.trim() ? unitCode.trim() : `UNIT-${Date.now().toString().slice(-6)}`;
     let finalImei = imei && imei.trim() ? imei.trim() : `35${Date.now()}`;
 
-    // Cek duplikasi unitCode & auto-disambiguate agar tidak gagal saat pengujian berulang di Postman
+    // Cek duplikasi unitCode (BUG-002: Harus tolak 409 jika unitCode sudah ada)
     const existingUnitCode = await prisma.iphoneUnit.findUnique({
       where: { unitCode: finalUnitCode },
     });
     if (existingUnitCode) {
-      finalUnitCode = `${finalUnitCode}-${Date.now().toString().slice(-4)}`;
+      return errorResponse(res, `Kode unit '${finalUnitCode}' sudah digunakan.`, 409);
     }
 
+    // Cek duplikasi IMEI (BUG-001: Harus tolak 409 jika IMEI sudah ada)
     const existingImei = await prisma.iphoneUnit.findUnique({
       where: { imei: finalImei },
     });
     if (existingImei) {
-      finalImei = `${finalImei.slice(0, 11)}${Math.floor(1000 + Math.random() * 9000)}`;
+      return errorResponse(res, `IMEI '${finalImei}' sudah digunakan oleh unit lain.`, 409);
     }
 
     const unitColor = color && color.trim() ? color.trim() : 'Desert Titanium';
     const unitStatus = status && VALID_STATUSES.includes(status.toUpperCase()) ? status.toUpperCase() : 'AVAILABLE';
+
+    // Validasi batteryHealth rentang 1 - 100 (BUG-003: Harus tolak 400 jika di luar 1-100)
     const bh = batteryHealth !== undefined ? parseInt(batteryHealth, 10) : 100;
-    const finalBatteryHealth = isNaN(bh) || bh < 1 || bh > 100 ? 100 : bh;
+    if (isNaN(bh) || bh < 1 || bh > 100) {
+      return errorResponse(res, 'Battery health harus angka 1 - 100.', 400);
+    }
+    const finalBatteryHealth = bh;
 
     const newUnit = await prisma.iphoneUnit.create({
       data: {
@@ -264,7 +270,7 @@ const updateUnit = async (req, res, next) => {
 
     if (imei && imei.trim() !== existing.imei) {
       const dup = await prisma.iphoneUnit.findUnique({ where: { imei: imei.trim() } });
-      if (dup) return errorResponse(res, `IMEI '${imei}' sudah digunakan unit lain.`, 409);
+      if (dup) return errorResponse(res, `IMEI '${imei}' sudah digunakan oleh unit lain.`, 409);
       updateData.imei = imei.trim();
     }
 

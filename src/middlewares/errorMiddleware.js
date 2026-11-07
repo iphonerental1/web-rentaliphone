@@ -21,6 +21,14 @@ const errorHandler = (err, req, res, next) => {
     return errorResponse(res, `Terjadi kesalahan saat mengunggah file: ${err.message}`, 400);
   }
 
+  // Handle Multer fileFilter or form parsing error
+  if (err.message && err.message.includes('Format file tidak didukung')) {
+    return errorResponse(res, err.message, 400);
+  }
+  if (err.message && err.message.includes('Unexpected end of form')) {
+    return errorResponse(res, 'Tidak ada file gambar yang diunggah.', 400);
+  }
+
   // Prisma Unique Constraint Error (P2002)
   if (err.code === 'P2002') {
     const fields = err.meta?.target ? err.meta.target.join(', ') : 'bidang unik';

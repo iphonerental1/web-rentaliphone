@@ -35,6 +35,16 @@
       "key": "bookingId",
       "value": "6f8da2c1-9dd0-45ad-a742-10db6812f1b5",
       "type": "string"
+    },
+    {
+      "key": "imageUrl",
+      "value": "http://localhost:5000/uploads/units/sample-iphone.jpg",
+      "type": "string"
+    },
+    {
+      "key": "paymentProofUrl",
+      "value": "http://localhost:5000/uploads/payments/sample-payment.jpg",
+      "type": "string"
     }
   ],
   "auth": {
@@ -61,8 +71,12 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/",
-              "host": ["{{baseUrl}}"],
-              "path": [""]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
             },
             "description": "Endpoint root yang mengembalikan informasi selamat datang, versi API, dan daftar endpoint utama."
           },
@@ -78,8 +92,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/health",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "health"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health"
+              ]
             },
             "description": "Memeriksa status kesehatan server backend."
           },
@@ -100,8 +120,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/catalog?series=&storage=&search=",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "catalog"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "catalog"
+              ],
               "query": [
                 {
                   "key": "series",
@@ -134,8 +160,15 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/catalog/{{slug}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "catalog", "{{slug}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "catalog",
+                "{{slug}}"
+              ]
             },
             "description": "Mengambil detail lengkap satu model iPhone berdasarkan slug (contoh: `iphone-15-pro-max-256gb`). Menampilkan ketersediaan warna dan unit fisik."
           },
@@ -182,8 +215,15 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
             },
             "description": "Login untuk Admin. Token JWT akan otomatis diekstrak dan disimpan ke variable `{{token}}` melalui Test script."
           },
@@ -196,8 +236,15 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/me",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "me"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "me"
+              ]
             },
             "description": "Mendapatkan profil admin yang sedang login berdasarkan token JWT."
           },
@@ -219,8 +266,15 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/password",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "password"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "password"
+              ]
             },
             "description": "Mengubah password admin. Membutuhkan verifikasi password lama dan password baru minimal 6 karakter."
           },
@@ -238,8 +292,16 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/dashboard/stats",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "dashboard", "stats"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "dashboard",
+                "stats"
+              ]
             },
             "description": "Mengambil ringkasan statistik KPI:\n- Total pendapatan keseluruhan, pendapatan bulan ini, dan denda\n- Ringkasan stok unit fisik (Total, Available, Rented, Maintenance)\n- Ringkasan booking (Total, Aktif, Selesai, Dibatalkan)\n- Jadwal pengembalian hari ini / Overdue\n- Transaksi sewa terbaru (5 booking terakhir)"
           },
@@ -257,8 +319,15 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/models?series=&search=",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "models"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "models"
+              ],
               "query": [
                 {
                   "key": "series",
@@ -304,12 +373,19 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"iPhone 16 Pro\",\n  \"series\": \"iPhone 16 Series\",\n  \"storage\": \"256GB\",\n  \"pricePerDay\": 400000,\n  \"description\": \"Apple iPhone 16 Pro dengan chip A18 Pro, bodi titanium, dan tombol Camera Control.\",\n  \"imageUrl\": \"http://localhost:5000/uploads/units/sample-iphone.jpg\"\n}"
+              "raw": "{\n  \"name\": \"iPhone 16 Pro\",\n  \"series\": \"iPhone 16 Series\",\n  \"storage\": \"256GB\",\n  \"pricePerDay\": 400000,\n  \"description\": \"Apple iPhone 16 Pro dengan chip A18 Pro, bodi titanium, dan tombol Camera Control.\",\n  \"imageUrl\": \"{{imageUrl}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/models",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "models"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "models"
+              ]
             },
             "description": "Menambahkan model katalog iPhone baru. Model ID yang terbentuk akan disimpan ke variable `modelId`."
           },
@@ -322,8 +398,16 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/models/{{modelId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "models", "{{modelId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "models",
+                "{{modelId}}"
+              ]
             },
             "description": "Mengambil detail spesifik satu model iPhone beserta unit-unit fisik di dalamnya."
           },
@@ -345,8 +429,16 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/models/{{modelId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "models", "{{modelId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "models",
+                "{{modelId}}"
+              ]
             },
             "description": "Mengubah data model katalog iPhone."
           },
@@ -359,8 +451,16 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/models/{{modelId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "models", "{{modelId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "models",
+                "{{modelId}}"
+              ]
             },
             "description": "Menghapus model iPhone. Penghapusan dicegah jika ada unit fisik yang berstatus RENTED."
           },
@@ -378,8 +478,15 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/units?modelId=&status=&search=",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "units"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "units"
+              ],
               "query": [
                 {
                   "key": "modelId",
@@ -434,8 +541,15 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/units",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "units"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "units"
+              ]
             },
             "description": "Menambahkan unit fisik baru. Memeriksa keunikan unitCode dan IMEI. Menyimpan ID ke `unitId`."
           },
@@ -448,8 +562,16 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/units/{{unitId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "units", "{{unitId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "units",
+                "{{unitId}}"
+              ]
             },
             "description": "Mengambil detail spesifik unit fisik beserta riwayat 5 booking terakhir."
           },
@@ -471,8 +593,16 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/units/{{unitId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "units", "{{unitId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "units",
+                "{{unitId}}"
+              ]
             },
             "description": "Mengubah informasi fisik unit seperti warna, battery health, IMEI, atau kode unit."
           },
@@ -494,8 +624,17 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/units/{{unitId}}/status",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "units", "{{unitId}}", "status"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "units",
+                "{{unitId}}",
+                "status"
+              ]
             },
             "description": "Mengubah status unit fisik secara langsung (AVAILABLE, RENTED, MAINTENANCE)."
           },
@@ -508,8 +647,16 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/units/{{unitId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "units", "{{unitId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "units",
+                "{{unitId}}"
+              ]
             },
             "description": "Menghapus unit fisik. Unit tidak dapat dihapus jika sedang berstatus RENTED."
           },
@@ -527,8 +674,15 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/bookings?status=&startDate=&endDate=&search=",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "bookings"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "bookings"
+              ],
               "query": [
                 {
                   "key": "status",
@@ -584,12 +738,19 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"unitId\": \"{{unitId}}\",\n  \"customerName\": \"Budi Santoso\",\n  \"customerPhone\": \"081234567890\",\n  \"customerIdentity\": \"KTP - 3201234567890001\",\n  \"customerAddress\": \"Jl. Sudirman No. 45, Jakarta Selatan\",\n  \"startDate\": \"2026-10-25T09:00:00.000Z\",\n  \"endDate\": \"2026-10-28T18:00:00.000Z\",\n  \"totalDays\": 3,\n  \"bankName\": \"BCA\",\n  \"paymentProofUrl\": \"http://localhost:5000/uploads/payments/sample-payment.jpg\",\n  \"notes\": \"Disewa untuk keperluan konten pernikahan (Order via WA)\"\n}"
+              "raw": "{\n  \"unitId\": \"{{unitId}}\",\n  \"customerName\": \"Budi Santoso\",\n  \"customerPhone\": \"081234567890\",\n  \"customerIdentity\": \"KTP - 3201234567890001\",\n  \"customerAddress\": \"Jl. Sudirman No. 45, Jakarta Selatan\",\n  \"startDate\": \"2026-10-25T09:00:00.000Z\",\n  \"endDate\": \"2026-10-28T18:00:00.000Z\",\n  \"totalDays\": 3,\n  \"bankName\": \"BCA\",\n  \"paymentProofUrl\": \"{{paymentProofUrl}}\",\n  \"notes\": \"Disewa untuk keperluan konten pernikahan (Order via WA)\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/bookings",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "bookings"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "bookings"
+              ]
             },
             "description": "Admin menginput pesanan sewa yang disepakati melalui WhatsApp.\n- Mencegah double-booking (Unit harus AVAILABLE).\n- Menggunakan Prisma Transaction.\n- Otomatis mengubah status unit menjadi RENTED."
           },
@@ -602,8 +763,16 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/bookings/{{bookingId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "bookings", "{{bookingId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "bookings",
+                "{{bookingId}}"
+              ]
             },
             "description": "Mengambil detail lengkap transaksi booking, data penyewa, unit fisik, dan link bukti transfer pembayaran."
           },
@@ -625,8 +794,17 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/bookings/{{bookingId}}/status",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "bookings", "{{bookingId}}", "status"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "bookings",
+                "{{bookingId}}",
+                "status"
+              ]
             },
             "description": "Mengubah status transaksi booking.\n- Pilihan status: `BOOKED`, `ONGOING`, `COMPLETED`, `CANCELLED`.\n- Jika diubah ke `COMPLETED` atau `CANCELLED`, unit fisik iPhone **otomatis kembali menjadi AVAILABLE** dan mencatat `actualReturnDate`."
           },
@@ -648,8 +826,16 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/bookings/{{bookingId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "bookings", "{{bookingId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "bookings",
+                "{{bookingId}}"
+              ]
             },
             "description": "Mengubah data informasi transaksi booking seperti nama, nomor telepon, alamat, bank, denda, atau catatan."
           },
@@ -671,14 +857,22 @@
                 {
                   "key": "file",
                   "type": "file",
-                  "description": "Pilih file gambar bukti transfer (misal: uploads/sample-payment.jpg). PERHATIAN: Pilih file gambar berekstensi .jpg/.png, JANGAN memilih folder agar tidak terjadi error EISDIR."
+                  "description": "Pilih file gambar bukti transfer (misal: uploads/sample-payment.jpg). PERHATIAN: Pilih file gambar berekstensi .jpg/.png, JANGAN memilih folder agar tidak terjadi error EISDIR.",
+                  "src": "uploads/sample-payment.jpg"
                 }
               ]
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/upload?type=payments",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "upload"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "upload"
+              ],
               "query": [
                 {
                   "key": "type",
@@ -689,7 +883,24 @@
             },
             "description": "Mengunggah gambar bukti transfer dari WhatsApp. Mengembalikan URL gambar statis yang dapat disimpan pada booking."
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Simpan URL bukti transfer hasil upload ke variable environment dan collection",
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data && res.data.url) {",
+                  "    pm.environment.set(\"paymentProofUrl\", res.data.url);",
+                  "    pm.collectionVariables.set(\"paymentProofUrl\", res.data.url);",
+                  "    console.log(\"✅ Payment proof URL tersimpan:\", res.data.url);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         },
         {
           "name": "Upload Foto Unit iPhone",
@@ -702,14 +913,22 @@
                 {
                   "key": "file",
                   "type": "file",
-                  "description": "Pilih file foto unit iPhone (misal: uploads/sample-iphone.jpg). PERHATIAN: Pilih file gambar berekstensi .jpg/.png, JANGAN memilih folder agar tidak terjadi error EISDIR."
+                  "description": "Pilih file foto unit iPhone (misal: uploads/sample-iphone.jpg). PERHATIAN: Pilih file gambar berekstensi .jpg/.png, JANGAN memilih folder agar tidak terjadi error EISDIR.",
+                  "src": "uploads/sample-iphone.jpg"
                 }
               ]
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/upload?type=units",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "upload"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "upload"
+              ],
               "query": [
                 {
                   "key": "type",
@@ -720,7 +939,24 @@
             },
             "description": "Mengunggah gambar foto unit fisik atau foto katalog model iPhone."
           },
-          "response": []
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Simpan URL foto unit hasil upload ke variable environment dan collection",
+                  "const res = pm.response.json();",
+                  "if (res.success && res.data && res.data.url) {",
+                  "    pm.environment.set(\"imageUrl\", res.data.url);",
+                  "    pm.collectionVariables.set(\"imageUrl\", res.data.url);",
+                  "    console.log(\"✅ Image URL unit/model tersimpan:\", res.data.url);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
     },
@@ -734,8 +970,15 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/reports?startDate=&endDate=&status=",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "reports"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "reports"
+              ],
               "query": [
                 {
                   "key": "startDate",
@@ -765,8 +1008,15 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/admin/reports?format=csv&startDate=&endDate=&status=",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "reports"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "reports"
+              ],
               "query": [
                 {
                   "key": "format",

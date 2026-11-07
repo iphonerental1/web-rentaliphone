@@ -8,7 +8,7 @@ const { BASE_URL } = require('../config/env');
 const uploadFile = async (req, res, next) => {
   try {
     if (!req.file) {
-      return errorResponse(res, 'Tidak ada file gambar yang diunggah. Gunakan field name "file" atau "image".', 400);
+      return errorResponse(res, 'Tidak ada file gambar yang diunggah.', 400);
     }
 
     // Buat URL yang dapat diakses publik melalui browser/frontend

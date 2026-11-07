@@ -36,7 +36,9 @@ const fileFilter = (req, file, cb) => {
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Format file tidak didukung! Hanya gambar JPEG, JPG, PNG, dan WEBP yang diperbolehkan.'), false);
+    const error = new Error('Format file tidak didukung! Hanya gambar JPEG, JPG, PNG, dan WEBP yang diperbolehkan.');
+    error.statusCode = 400;
+    cb(error, false);
   }
 };
 

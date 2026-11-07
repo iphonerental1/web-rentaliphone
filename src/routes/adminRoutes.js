@@ -3,6 +3,7 @@ const router = express.Router();
 
 const { verifyAdminToken } = require('../middlewares/authMiddleware');
 const upload = require('../middlewares/uploadMiddleware');
+const { errorResponse } = require('../utils/response');
 
 const dashboardController = require('../controllers/dashboardController');
 const iphoneModelController = require('../controllers/iphoneModelController');
@@ -41,10 +42,28 @@ router.put(['/bookings/:id', '/bookings'], bookingController.updateBookingDetail
 
 // 5. Upload File (Foto Unit / Bukti Transfer)
 const flexibleUpload = (req, res, next) => {
-  upload.single('file')(req, res, (err) => {
-    if (err) return next(err);
-    if (!req.file) {
-      return upload.single('image')(req, res, next);
+  upload.any()(req, res, (err) => {
+    if (err) {
+      if (err.name === 'MulterError') {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return errorResponse(res, 'Ukuran file terlalu besar. Maksimum ukuran file adalah 5MB.', 400);
+        }
+        return errorResponse(res, `Terjadi kesalahan saat mengunggah file: ${err.message}`, 400);
+      }
+      if (err.message && err.message.includes('Unexpected end of form')) {
+        return errorResponse(res, 'Tidak ada file gambar yang diunggah.', 400);
+      }
+      return errorResponse(
+        res,
+        err.message || 'Format file tidak didukung! Hanya gambar JPEG, JPG, PNG, dan WEBP yang diperbolehkan.',
+        err.statusCode || 400
+      );
+    }
+    if (req.files && req.files.length > 0) {
+      const validFiles = req.files.filter((f) => f.size > 0 || (f.originalname && f.originalname.trim() !== ''));
+      if (validFiles.length > 0) {
+        req.file = validFiles.find((f) => f.fieldname === 'file' || f.fieldname === 'image') || validFiles[0];
+      }
     }
     next();
   });
