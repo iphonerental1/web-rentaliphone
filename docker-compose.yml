@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # Layanan Database (PostgreSQL)
+  database:
+    image: postgres:15-alpine
+    container_name: rentaliphone_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-root}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-rootpassword}
+      POSTGRES_DB: ${DB_DATABASE:-rental_iphone}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  # Layanan Backend
+  backend:
+    build: ./backend
+    container_name: rentaliphone_backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-rootpassword}
+      - DB_DATABASE=${DB_DATABASE:-rental_iphone}
+    depends_on:
+      - database
+
+  # Layanan Frontend
+  frontend:
+    build: ./frontend
+    container_name: rentaliphone_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
