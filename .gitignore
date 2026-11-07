@@ -1,6 +1,14 @@
 ﻿node_modules/
 .env
+.env.local
 uploads/
-dist/
+*.jpg
+*.jpeg
+*.png
+*.docx
+*.pdf
+generate_documentation_docx.py
+install.ps1
 *.log
 .DS_Store
+Thumbs.db
